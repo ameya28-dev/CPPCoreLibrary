@@ -48,6 +48,7 @@ namespace core {
     private:
         ScopedHInternet _hSession, _hConnect, _hRequest;
         bool _isStrict = true;
+        bool _isSecure = false;
         State _state   = State::none;
     };
 #endif

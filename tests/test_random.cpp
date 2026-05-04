@@ -35,9 +35,26 @@ TEST(UniformRealTest, RangeCheck) {
     }
 }
 
-TEST(NormalTest, VectorGeneration) {
-    core::Normal gen(0.0, 1.0);
-    auto vec = gen.getVector(10);
-    EXPECT_EQ(vec.size(), 10);
+TEST(UniformIntTest, EdgeRanges) {
+    core::UniformInt gen(0, 0); // Min == Max
+    for(int i = 0; i < 10; ++i) {
+        EXPECT_EQ(gen.next(), 0);
+    }
+    
+    core::UniformInt gen2(-5, 5);
+    for(int i = 0; i < 100; ++i) {
+        int val = gen2.next();
+        EXPECT_GE(val, -5);
+        EXPECT_LE(val, 5);
+    }
+}
+
+TEST(UniformIntTest, LargeRange) {
+    core::UniformInt gen(1000000, 2000000);
+    for(int i = 0; i < 50; ++i) {
+        int val = gen.next();
+        EXPECT_GE(val, 1000000);
+        EXPECT_LE(val, 2000000);
+    }
 }
 

@@ -3,16 +3,24 @@ project(CoreLibrary)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(CoreLibrary STATIC
+set(CoreLibrary_SOURCES
         src/random/random.cpp
         src/logger/manager/manager.cpp
         src/utils/utils.cpp
-        src/win_http/types/types.cpp
-        src/win_http/handler/network.cpp
         src/http/types/types.cpp
         src/http/codes/http_status.cpp
         src/http/codes/network_status.cpp
-        src/http/base_client/base_client.cpp)
+        src/http/base_client/base_client.cpp
+)
+
+if (WIN32)
+    list(APPEND CoreLibrary_SOURCES
+        src/win_http/types/types.cpp
+        src/win_http/handler/network.cpp
+    )
+endif()
+
+add_library(CoreLibrary STATIC ${CoreLibrary_SOURCES})
 
 target_include_directories(CoreLibrary
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -88,6 +96,9 @@ if (googletest_ADDED)
             tests/test_random.cpp
             tests/test_logger.cpp
             tests/test_winhttp.cpp
+            tests/test_base_client.cpp
+            tests/test_http_status.cpp
+            tests/test_http_status.cpp
     )
 
     target_link_libraries(CoreTests PUBLIC CoreLibrary gtest_main)

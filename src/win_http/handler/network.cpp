@@ -40,6 +40,7 @@ void core::NetworkHandler::SetTimeouts(const std::chrono::milliseconds connect, 
 void core::NetworkHandler::Connect(const std::wstring& host, const bool isHTTPS) {
     _assertStates(_state >= State::session, "Trying to connect before initializing WinHttp Session");
 
+    _isSecure = isHTTPS;
     _hConnect.reset(WinHttpConnect(
         _hSession.get(), host.c_str(), isHTTPS ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT, 0));
 
@@ -56,8 +57,9 @@ void core::NetworkHandler::Connect(const std::wstring& host, const bool isHTTPS)
 void core::NetworkHandler::Request(const HTTPMethod method, const wchar_t* url) {
     _assertStates(_state >= State::connect, "Trying to request before initializing WinHttp Connect");
 
+    const DWORD requestFlags = _isSecure ? WINHTTP_FLAG_SECURE : 0;
     _hRequest.reset(WinHttpOpenRequest(_hConnect.get(), toWinHttpVerb(method), url, nullptr, WINHTTP_NO_REFERER,
-        WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE));
+        WINHTTP_DEFAULT_ACCEPT_TYPES, requestFlags));
     if (!_hRequest) {
         _state            = State::connect;
         const DWORD error = GetLastError();

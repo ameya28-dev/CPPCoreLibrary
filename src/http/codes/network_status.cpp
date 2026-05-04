@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#if WIN32
 core::NetworkErrorStatus core::toNetworkErrorStatus(const DWORD error) {
     switch (error) {
 #define X(name, code, str, desc) \
@@ -13,6 +14,7 @@ core::NetworkErrorStatus core::toNetworkErrorStatus(const DWORD error) {
         return NetworkErrorStatus::Unknown;
     }
 }
+#endif
 
 std::string core::toString(const NetworkErrorStatus code) {
     switch (code) {

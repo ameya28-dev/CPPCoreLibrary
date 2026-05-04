@@ -1,6 +1,7 @@
 #ifndef CORELIBRARY_INCLUDE_CORE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
 #define CORELIBRARY_INCLUDE_CORE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
 
+#include <cassert>
 #include <chrono>
 #include <fmt/base.h>
 #include <fmt/chrono.h>
@@ -20,7 +21,7 @@
 
 namespace core {
 
-    static UniformInt generator{constants::Jitter::Min, constants::Jitter::Max};
+    inline static UniformInt generator{constants::Jitter::Min, constants::Jitter::Max};
 
     class BaseClient {
     public:
@@ -127,6 +128,8 @@ namespace core {
         } catch (const std::runtime_error& ex) {
             return NetworkError{ex.what(), NetworkErrorStatus::InternalError};
         }
+#else
+        return NetworkError{"WinHTTP is not supported on this platform", NetworkErrorStatus::Unknown};
 #endif
     }
 
@@ -138,14 +141,15 @@ namespace core {
         while (true) {
             res = func(path);
             /// retry only if HttpStatus and ErrorCode are transient
-            if (const auto error = std::get_if<NetworkError>(&res); error && !isTransient(error->code)) {
-                return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
+            if (const auto error = std::get_if<NetworkError>(&res)) {
+                if (!isTransient(error->code)) {
+                    return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
+                }
             }
 
-            if (const auto result = std::get<NetworkResult>(res); !isTransient(result.status)) {
-                return _parseToVariant<T>(result);
+            if (const auto [body, status] = std::get<NetworkResult>(res); !isTransient(status)) {
+                return _parseToVariant<T>(std::move(res));
             }
-
 
             if (attempts >= _retryCount) {
                 return Failure<>{getRawBody(res),

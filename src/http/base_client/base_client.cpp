@@ -1,4 +1,5 @@
 #include "core/http/base_client/base_client.hpp"
+#include <system_error>
 
 core::BaseClient::BaseClient(const std::string& agent, const std::string& host, const bool isHTTPS) {
 #if WIN32
@@ -12,6 +13,8 @@ core::BaseClient::BaseClient(const std::string& agent, const std::string& host, 
         LOG_FATAL("{}: Failed to construct a WinHttp Network handle: {}", ex.code().value(), ex.what());
         _isOKConstruct = false;
     }
+#else
+    _isOKConstruct = true;
 #endif
 }
 
@@ -59,5 +62,7 @@ core::NetworkResponse core::BaseClient::_sendRequest(
     } catch (const std::runtime_error& ex) {
         return NetworkError{ex.what(), NetworkErrorStatus::InternalError};
     }
+#else
+    return NetworkError{"WinHTTP is not supported on this platform", NetworkErrorStatus::Unknown};
 #endif
 }
