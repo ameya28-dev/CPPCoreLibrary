@@ -61,8 +61,19 @@ namespace core {
     // Get Detailed Description
     std::string getDescription(NetworkErrorStatus code);
 
-    // Helper: Check if the error is a "retryable" transient network issue
-    bool isTransient(std::optional<NetworkErrorStatus> code, std::optional<HttpStatus> status);
+    /**
+     * Check if the error is a "retryable" transient network issue for Network/Transport errors
+     * @param netErr Error occurred due to system level native APIs
+     * @return if should be retried
+     */
+    bool isTransient(NetworkErrorStatus netErr);
+
+    /**
+     * Check if the error is a "retryable" transient network issue for HTTP Server side failure (5xx)
+     * @param status Error occurred due to system level native APIs
+     * @return if should be retried
+     */
+    bool isTransient(HttpStatus status);
 
     int getNumericCodeOfError(NetworkErrorStatus code);
 

@@ -74,6 +74,9 @@ void core::NetworkHandler::AddHeaders(const Headers& headers) {
     for (const auto& [key, value] : headers) {
         headerLine += toWideString(key) + L": " + toWideString(value) + L"\r\n";
     }
+    if (headerLine.empty()) {
+        return;
+    }
     if (!WinHttpAddRequestHeaders(_hRequest.get(), headerLine.c_str(), -1L, WINHTTP_ADDREQ_FLAG_ADD)) {
         _state            = State::connect;
         const DWORD error = GetLastError();

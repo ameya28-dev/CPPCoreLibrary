@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <core/win_http/handler/network.hpp>
 #include <core/utils/utils.hpp>
+#include <core/win_http/handler/network.hpp>
+
 
 using namespace core;
 
@@ -52,16 +53,20 @@ TEST(HttpCodesTest, NetworkErrorStrings) {
 
 TEST(HttpCodesTest, IsTransient) {
     // Test transient network errors
-    EXPECT_TRUE(isTransient(NetworkErrorStatus::Timeout, HttpStatus::Ok));
-    EXPECT_TRUE(isTransient(NetworkErrorStatus::CannotConnect, HttpStatus::Ok));
+    EXPECT_TRUE(isTransient(NetworkErrorStatus::Timeout));
+    EXPECT_TRUE(isTransient(NetworkErrorStatus::CannotConnect));
+    EXPECT_TRUE(isTransient(NetworkErrorStatus::ConnectionAborted));
+    EXPECT_TRUE(isTransient(NetworkErrorStatus::ResendRequest));
 
     // Test transient HTTP errors (5xx)
-    EXPECT_TRUE(isTransient(NetworkErrorStatus::Success, HttpStatus::InternalServerError));
-    EXPECT_TRUE(isTransient(NetworkErrorStatus::Success, HttpStatus::BadGateway));
+    EXPECT_TRUE(isTransient(HttpStatus::InternalServerError));
+    EXPECT_TRUE(isTransient(HttpStatus::BadGateway));
 
     // Test non-transient errors
-    EXPECT_FALSE(isTransient(NetworkErrorStatus::InvalidUrl, HttpStatus::Ok));
-    EXPECT_FALSE(isTransient(NetworkErrorStatus::Success, HttpStatus::BadRequest));
+    EXPECT_FALSE(isTransient(NetworkErrorStatus::InvalidUrl));
+    EXPECT_FALSE(isTransient(NetworkErrorStatus::Success));
+    EXPECT_FALSE(isTransient(HttpStatus::Ok));
+    EXPECT_FALSE(isTransient(HttpStatus::BadRequest));
 }
 
 TEST(BaseClientTest, Construction) {

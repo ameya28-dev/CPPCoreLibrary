@@ -5,19 +5,19 @@
 #include <spdlog/logger.h>
 #include <string_view>
 
-#define LOG_INIT() LogManager::Init()
+#define LOG_INIT() core::LogManager::Init()
 
 #ifndef NDEBUG
 
-#define LOG_TRACE(...)   LogManager::Global()->trace(__VA_ARGS__)
-#define LOG_DEBUG(...)   LogManager::Global()->debug(__VA_ARGS__)
-#define LOG_INFO(...)    LogManager::Global()->info(__VA_ARGS__)
-#define LOG_WARNING(...) LogManager::Global()->warn(__VA_ARGS__)
+#define LOG_TRACE(...)   core::LogManager::Global()->trace(__VA_ARGS__)
+#define LOG_DEBUG(...)   core::LogManager::Global()->debug(__VA_ARGS__)
+#define LOG_INFO(...)    core::LogManager::Global()->info(__VA_ARGS__)
+#define LOG_WARNING(...) core::LogManager::Global()->warn(__VA_ARGS__)
 
-#define PRINT_TRACE(...)   LogManager::Print()->trace(__VA_ARGS__)
-#define PRINT_DEBUG(...)   LogManager::Print()->debug(__VA_ARGS__)
-#define PRINT_INFO(...)    LogManager::Print()->info(__VA_ARGS__)
-#define PRINT_WARNING(...) LogManager::Print()->warn(__VA_ARGS__)
+#define PRINT_TRACE(...)   core::LogManager::Print()->trace(__VA_ARGS__)
+#define PRINT_DEBUG(...)   core::LogManager::Print()->debug(__VA_ARGS__)
+#define PRINT_INFO(...)    core::LogManager::Print()->info(__VA_ARGS__)
+#define PRINT_WARNING(...) core::LogManager::Print()->warn(__VA_ARGS__)
 
 #else
 
@@ -33,11 +33,11 @@
 
 #endif
 
-#define LOG_ERROR(...) LogManager::Global()->error(__VA_ARGS__)
-#define LOG_FATAL(...) LogManager::ReportCoreFatal(__FILE__, __LINE__, fmt::format(__VA_ARGS__))
+#define LOG_ERROR(...) core::LogManager::Global()->error(__VA_ARGS__)
+#define LOG_FATAL(...) core::LogManager::ReportCoreFatal(__FILE__, __LINE__, fmt::format(__VA_ARGS__))
 
-#define PRINT_ERROR(...) LogManager::Print()->error(__VA_ARGS__)
-#define PRINT_FATAL(...) LogManager::ReportPrintFatal(__FILE__, __LINE__, fmt::format(__VA_ARGS__))
+#define PRINT_ERROR(...) core::LogManager::Print()->error(__VA_ARGS__)
+#define PRINT_FATAL(...) core::LogManager::ReportPrintFatal(__FILE__, __LINE__, fmt::format(__VA_ARGS__))
 
 namespace core {
     class LogManager {

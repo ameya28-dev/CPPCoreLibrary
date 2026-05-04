@@ -128,11 +128,11 @@ namespace core {
         while (true) {
             res = func(path);
             /// retry only if HttpStatus and ErrorCode are transient
-            if (const auto error = std::get_if<NetworkError>(&res); !isTransient(error->code, {})) {
+            if (const auto error = std::get_if<NetworkError>(&res); !isTransient(error->code)) {
                 return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
             }
 
-            if (const auto result = std::get<NetworkResult>(res); !isTransient({}, result.status)) {
+            if (const auto result = std::get<NetworkResult>(res); !isTransient(result.status)) {
                 return _parseToVariant<T>(result);
             }
 
