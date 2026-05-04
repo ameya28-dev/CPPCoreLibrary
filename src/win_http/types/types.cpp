@@ -1,15 +1,5 @@
 #include "core/win_http/types/types.hpp"
 
-#include "core/win_http/utils/utils.hpp"
-
-size_t core::CaseInsensitiveHash::operator()(const std::string_view key) const {
-    return caseInsensitiveHash(key);
-}
-
-bool core::CaseInsensitiveEqual::operator()(std::string_view a, std::string_view b) const {
-    return isEqualCaseInsensitive(a, b);
-}
-
 void core::WinHttpHandleDeleter::operator()(const pointer h) const {
     if (h != nullptr) {
         WinHttpCloseHandle(h);

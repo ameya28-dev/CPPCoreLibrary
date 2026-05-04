@@ -1,4 +1,4 @@
-#include "core/win_http/utils/utils.hpp"
+#include "core/utils/utils.hpp"
 
 #include <algorithm>
 #include <iomanip>
@@ -76,7 +76,7 @@ std::string core::urlEncode(const std::string& input) {
     return escaped.str();
 }
 
-std::wstring core::generateURLEndpoint(const std::wstring& path, const Params& params) {
+std::wstring core::generateURLEndpoint(const std::wstring& path, const std::multimap<std::string, std::string>& params) {
     if (path.empty()) {
         return L"/";
     }

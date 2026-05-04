@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(CoreLibrary STATIC
         src/random/random.cpp
         src/logger/manager/manager.cpp
-        src/win_http/utils/utils.cpp
+        src/utils/utils.cpp
         src/win_http/types/types.cpp
         src/win_http/handler/network.cpp
         src/http/types/types.cpp

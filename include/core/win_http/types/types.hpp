@@ -17,16 +17,6 @@
 // clang-format on
 
 namespace core {
-    struct CaseInsensitiveHash {
-        size_t operator()(std::string_view) const;
-    };
-
-    struct CaseInsensitiveEqual {
-        bool operator()(std::string_view, std::string_view) const;
-    };
-
-    using Headers = std::unordered_multimap<std::string, std::string, CaseInsensitiveHash, CaseInsensitiveEqual>;
-
     struct WinHttpHandleDeleter {
         using pointer = HINTERNET;
 
@@ -34,8 +24,6 @@ namespace core {
     };
 
     using ScopedHInternet = std::unique_ptr<HINTERNET, WinHttpHandleDeleter>;
-
-    using Params = std::multimap<std::string, std::string>;
 
 #define HTTP_METHOD_ENUM_LIST(X) X(Get, L"GET") X(Post, L"POST") X(Put, L"PUT") X(Patch, L"PATCH") X(Delete, L"DELETE")
 
