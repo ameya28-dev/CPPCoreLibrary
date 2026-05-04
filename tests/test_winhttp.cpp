@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <core/win_http/handler/network.hpp>
-#include <core/win_http/utils/utils.hpp>
+#include <core/utils/utils.hpp>
 
 using namespace core;
 

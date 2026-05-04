@@ -4,7 +4,6 @@
 #include <system_error>
 
 #include "core/win_http/constants/constants.hpp"
-#include "core/win_http/utils/utils.hpp"
 
 void core::NetworkHandler::Open(const std::wstring& agent) {
     _hSession.reset(WinHttpOpen(
