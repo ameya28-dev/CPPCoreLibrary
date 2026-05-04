@@ -86,6 +86,29 @@ target_link_libraries(CoreLibrary PUBLIC fmt::fmt)
 target_link_libraries(CoreLibrary PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(CoreLibrary PUBLIC spdlog::spdlog)
 
+# --- Testing Configuration ---
+CPMAddPackage(
+    NAME googletest
+    GITHUB_REPOSITORY google/googletest
+    VERSION 1.15.2
+    OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt ON"
+)
+
+if (googletest_ADDED)
+    enable_testing()
+    
+    add_executable(CoreTests 
+        tests/test_random.cpp
+        tests/test_logger.cpp
+        tests/test_winhttp.cpp
+    )
+    
+    target_link_libraries(CoreTests PRIVATE CoreLibrary gtest_main)
+    
+    include(GoogleTest)
+    gtest_discover_tests(CoreTests)
+endif()
+
 if (WIN32)
     message("Linking WinHTTP on Windows")
     target_link_libraries(CoreLibrary PUBLIC winhttp.lib)

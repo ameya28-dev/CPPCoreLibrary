@@ -16,10 +16,7 @@ auto core::UniformInt::getVector(const std::size_t size) -> std::vector<int> {
     return res;
 }
 
-core::UniformReal::UniformReal() : _gen(std::random_device{}()) {}
-
-core::UniformReal::UniformReal(const double min, const double max)
-    : _gen(std::random_device{}()), _distribution(min, max) {}
+core::UniformReal::UniformReal() : _gen(std::random_device{}()), _distribution(0.0, 1.0) {}
 
 core::UniformReal::UniformReal(const double min, const double max, const bool inclusive)
     : _gen(std::random_device{}()) {

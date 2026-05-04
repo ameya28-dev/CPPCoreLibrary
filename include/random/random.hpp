@@ -34,8 +34,6 @@ namespace core {
     public:
         UniformReal();
 
-        UniformReal(double, double);
-
         UniformReal(double, double, bool = false);
 
         double next();
