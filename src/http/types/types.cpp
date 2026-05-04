@@ -1,15 +1,5 @@
 #include "core/http/types/types.hpp"
 
-#include "core/utils/utils.hpp"
-
-size_t core::CaseInsensitiveHash::operator()(const std::string_view key) const {
-    return caseInsensitiveHash(key);
-}
-
-bool core::CaseInsensitiveEqual::operator()(const std::string_view a, const std::string_view b) const {
-    return isEqualCaseInsensitive(a, b);
-}
-
 std::string core::getErrorMessage(const NetworkResponse& response) {
     if (const auto error = std::get_if<NetworkError>(&response)) {
         return error->message;

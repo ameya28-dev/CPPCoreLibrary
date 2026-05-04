@@ -9,17 +9,6 @@
 #include <nlohmann/json.hpp>
 
 namespace core {
-    struct CaseInsensitiveHash {
-        size_t operator()(std::string_view) const;
-    };
-
-    struct CaseInsensitiveEqual {
-        bool operator()(std::string_view, std::string_view) const;
-    };
-
-    using Headers = std::unordered_multimap<std::string, std::string, CaseInsensitiveHash, CaseInsensitiveEqual>;
-    using Params  = std::multimap<std::string, std::string>;
-
     template <typename T, typename = void>
     struct IsJsonDeserializable : std::false_type {};
 

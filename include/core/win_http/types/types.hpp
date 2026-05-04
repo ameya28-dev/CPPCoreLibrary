@@ -1,15 +1,8 @@
-//
-// Created by ameya on 5/4/2026.
-//
-
 #ifndef CORELIBRARY_INCLUDE_CORE_WIN_HTTP_TYPES_TYPES_HPP
 #define CORELIBRARY_INCLUDE_CORE_WIN_HTTP_TYPES_TYPES_HPP
 
-#include <map>
 #include <memory>
 #include <string>
-#include <string_view>
-#include <unordered_map>
 
 // clang-format off
 #include <windows.h>

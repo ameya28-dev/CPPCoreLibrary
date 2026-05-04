@@ -7,6 +7,14 @@
 
 #include "core/logger/manager/manager.hpp"
 
+size_t core::CaseInsensitiveHash::operator()(const std::string_view key) const {
+    return caseInsensitiveHash(key);
+}
+
+bool core::CaseInsensitiveEqual::operator()(const std::string_view a, const std::string_view b) const {
+    return isEqualCaseInsensitive(a, b);
+}
+
 char core::toLower(const char c) {
     if (c >= 'A' && c <= 'Z') {
         return c + 32;
@@ -76,7 +84,8 @@ std::string core::urlEncode(const std::string& input) {
     return escaped.str();
 }
 
-std::wstring core::generateURLEndpoint(const std::wstring& path, const std::multimap<std::string, std::string>& params) {
+std::wstring core::generateURLEndpoint(
+    const std::wstring& path, const std::multimap<std::string, std::string>& params) {
     if (path.empty()) {
         return L"/";
     }

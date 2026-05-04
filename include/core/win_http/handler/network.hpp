@@ -4,6 +4,7 @@
 #include <chrono>
 #include <string>
 
+#include "core/utils/utils.hpp"
 #include "core/win_http/types/types.hpp"
 
 namespace core {

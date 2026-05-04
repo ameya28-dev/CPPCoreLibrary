@@ -12,6 +12,7 @@
 #include "core/http/types/types.hpp"
 #include "core/logger/manager/manager.hpp"
 #include "core/random/random.hpp"
+#include "core/utils/utils.hpp"
 #include "core/win_http/include.hpp"
 
 namespace core {
