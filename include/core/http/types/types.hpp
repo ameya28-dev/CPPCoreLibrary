@@ -45,7 +45,7 @@ namespace core {
 
     template <typename T = std::string>
     struct Success {
-        T data;
+        T body;
         int status;
     };
 

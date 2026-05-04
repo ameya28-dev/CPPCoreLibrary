@@ -1,7 +1,6 @@
 #ifndef CORELIBRARY_INCLUDE_CORE_HTTP_CODES_NETWORK_ERROR_HPP
 #define CORELIBRARY_INCLUDE_CORE_HTTP_CODES_NETWORK_ERROR_HPP
 
-#include <optional>
 #include <string>
 
 #include "http_status.hpp"
@@ -64,14 +63,14 @@ namespace core {
     /**
      * Check if the error is a "retryable" transient network issue for Network/Transport errors
      * @param netErr Error occurred due to system level native APIs
-     * @return if should be retried
+     * @return if "retryable", then true, else false
      */
     bool isTransient(NetworkErrorStatus netErr);
 
     /**
      * Check if the error is a "retryable" transient network issue for HTTP Server side failure (5xx)
      * @param status Error occurred due to system level native APIs
-     * @return if should be retried
+     * @return if "retryable", then true, else false
      */
     bool isTransient(HttpStatus status);
 

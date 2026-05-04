@@ -36,12 +36,14 @@ auto core::BaseClient::SetTimeouts(const std::chrono::milliseconds connect, cons
 
 auto core::BaseClient::Delete(const std::string& path, const Params& params, const Headers& headers)
     -> ApiResult<Empty> {
+    assert(_isOKConstruct && "Cannot request over network as connection failed");
     return _executeWithRetry<Empty>(
         [&](const std::string& p) { return _sendRequest(HTTPMethod::Delete, p, params, headers); }, path);
 }
 
 core::NetworkResponse core::BaseClient::_sendRequest(
     const HTTPMethod method, const std::string& path, const Params& params, const Headers& headers) {
+    assert(_isOKConstruct && "Cannot request over network as connection failed");
 #if WIN32
     try {
         const auto wPath = toWideString(path);

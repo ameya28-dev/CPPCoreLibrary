@@ -13,7 +13,7 @@
 #include "core/logger/manager/manager.hpp"
 #include "core/random/random.hpp"
 #include "core/utils/utils.hpp"
-#include "core/win_http/include.hpp"
+#include "core/win_http/handler/network.hpp"
 
 namespace core {
 
@@ -66,7 +66,9 @@ namespace core {
         auto _parseToVariant(NetworkResponse&& response) -> ApiResult<T>;
 
     private:
+#if WIN32
         NetworkHandler _handler;
+#endif
         int _retryCount     = constants::Defaults::RetryCount;
         bool _verbose       = constants::Defaults::Verbose;
         bool _isOKConstruct = false;
@@ -75,6 +77,7 @@ namespace core {
     template <typename Resp>
     auto BaseClient::Get(const std::string& path, const Params& params, const Headers& headers)
         -> std::enable_if_t<IsJsonDeserializable<Resp>::value, ApiResult<Resp>> {
+        assert(_isOKConstruct && "Cannot request over network as connection failed");
         return _executeWithRetry<Resp>(
             [&](const std::string& p) { return _sendRequest(HTTPMethod::Get, p, params, headers); }, path);
     }
@@ -82,6 +85,7 @@ namespace core {
     template <typename Resp, typename Req>
     auto BaseClient::Post(const std::string& path, const Req& body, const Headers& headers)
         -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>> {
+        assert(_isOKConstruct && "Cannot request over network as connection failed");
         return _executeWithRetry<Resp>(
             [&](const std::string& p) { return _sendRequest<Req>(HTTPMethod::Post, p, headers, body); }, path);
     }
@@ -89,6 +93,7 @@ namespace core {
     template <typename Resp, typename Req>
     auto BaseClient::Put(const std::string& path, const Req& body, const Headers& headers)
         -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>> {
+        assert(_isOKConstruct && "Cannot request over network as connection failed");
         return _executeWithRetry<Resp>(
             [&](const std::string& p) { return _sendRequest<Req>(HTTPMethod::Put, p, headers, body); }, path);
     }
@@ -96,6 +101,7 @@ namespace core {
     template <typename Resp, typename Req>
     auto BaseClient::Patch(const std::string& path, const Req& body, const Headers& headers)
         -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>> {
+        assert(_isOKConstruct && "Cannot request over network as connection failed");
         return _executeWithRetry<Resp>(
             [&](const std::string& p) { return _sendRequest<Req>(HTTPMethod::Patch, p, headers, body); }, path);
     }
@@ -103,6 +109,7 @@ namespace core {
     template <typename Req>
     auto BaseClient::_sendRequest(const HTTPMethod method, const std::string& path, const Headers& headers,
         const Req& payload) -> std::enable_if_t<IsJsonSerializable<Req>::value, NetworkResponse> {
+        assert(_isOKConstruct && "Cannot request over network as connection failed");
 #if WIN32
         try {
             const auto wPath = toWideString(path);
@@ -128,7 +135,7 @@ namespace core {
         while (true) {
             res = func(path);
             /// retry only if HttpStatus and ErrorCode are transient
-            if (const auto error = std::get_if<NetworkError>(&res); !isTransient(error->code)) {
+            if (const auto error = std::get_if<NetworkError>(&res); error && !isTransient(error->code)) {
                 return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
             }
 
@@ -165,6 +172,10 @@ namespace core {
         try {
             if constexpr (std::is_same_v<T, Empty>) {
                 return Success<Empty>{Empty{}, static_cast<int>(status)};
+            }
+
+            if constexpr (std::is_same_v<T, std::string>) {
+                return Success<T>{body, static_cast<int>(status)};
             }
 
             nlohmann::json j = body.empty() ? nlohmann::json::object() : nlohmann::json::parse(body);

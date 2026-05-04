@@ -6,7 +6,9 @@
 #include <string_view>
 #include <unordered_map>
 
+#if WIN32
 #include <windows.h>
+#endif
 
 namespace core {
     struct CaseInsensitiveHash {
@@ -27,11 +29,11 @@ namespace core {
 
     bool isEqualCaseInsensitive(std::string_view, std::string_view);
 
-    void printError(const std::string&, DWORD);
-
     std::string urlEncode(const std::string&);
 
 #if WIN32
+    void printError(const std::string&, DWORD);
+
     std::wstring toWideString(const std::string&);
 
     std::wstring generateURLEndpoint(const std::wstring&, const std::multimap<std::string, std::string>&);
