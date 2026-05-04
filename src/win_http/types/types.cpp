@@ -1,5 +1,7 @@
 #include "core/win_http/types/types.hpp"
 
+#if WIN32
+
 void core::WinHttpHandleDeleter::operator()(const pointer h) const {
     if (h != nullptr) {
         WinHttpCloseHandle(h);
@@ -18,3 +20,5 @@ const wchar_t* core::toWinHttpVerb(const core::HTTPMethod method) {
         return L"GET";
     }
 }
+
+#endif

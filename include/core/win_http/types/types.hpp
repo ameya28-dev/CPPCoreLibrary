@@ -4,12 +4,16 @@
 #include <memory>
 #include <string>
 
+#if WIN32
 // clang-format off
 #include <windows.h>
 #include <winhttp.h>
 // clang-format on
+#endif
 
 namespace core {
+
+#if WIN32
     struct WinHttpHandleDeleter {
         using pointer = HINTERNET;
 
@@ -17,6 +21,7 @@ namespace core {
     };
 
     using ScopedHInternet = std::unique_ptr<HINTERNET, WinHttpHandleDeleter>;
+#endif
 
 #define HTTP_METHOD_ENUM_LIST(X) X(Get, L"GET") X(Post, L"POST") X(Put, L"PUT") X(Patch, L"PATCH") X(Delete, L"DELETE")
 
@@ -26,12 +31,14 @@ namespace core {
 #undef AS_HTTP_METHOD_ENUM
     };
 
+#if WIN32
     const wchar_t* toWinHttpVerb(HTTPMethod);
 
     struct WinHttpResponse {
         std::string body;
         DWORD status;
     };
+#endif
 
 
 } // namespace core

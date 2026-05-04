@@ -1,5 +1,7 @@
 #include "core/win_http/handler/network.hpp"
 
+#if WIN32
+
 #include <cassert>
 #include <system_error>
 
@@ -205,3 +207,5 @@ void core::NetworkHandler::_send(const LPCVOID data, const DWORD size) {
     // If we exit the loop, we hit the max immediate retries for RESEND
     throw std::runtime_error("Max immediate WinHTTP resend attempts reached.");
 }
+
+#endif

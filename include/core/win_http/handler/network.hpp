@@ -9,6 +9,7 @@
 
 namespace core {
 
+#if WIN32
     class NetworkHandler {
     public:
         NetworkHandler() = default;
@@ -49,6 +50,7 @@ namespace core {
         bool _isStrict = true;
         State _state   = State::none;
     };
+#endif
 
 } // namespace core
 

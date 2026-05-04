@@ -13,7 +13,10 @@
 #include "core/logger/manager/manager.hpp"
 #include "core/random/random.hpp"
 #include "core/utils/utils.hpp"
+
+#if WIN32
 #include "core/win_http/handler/network.hpp"
+#endif
 
 namespace core {
 
