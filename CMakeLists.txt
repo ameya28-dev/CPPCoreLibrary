@@ -5,27 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(CoreLibrary STATIC
         src/random/random.cpp
-        include/random/random.hpp
-        include/logger/constants/constants.hpp
         src/logger/manager/manager.cpp
-        include/logger/manager/manager.hpp
-        include/win_http/constants/constants.hpp
         src/win_http/utils/utils.cpp
-        include/win_http/utils/utils.hpp
         src/win_http/types/types.cpp
-        include/win_http/types/types.hpp
         src/win_http/handler/network.cpp
-        include/win_http/handler/network.hpp
-        include/win_http/include.hpp
-        include/http/constants/constants.hpp
         src/http/types/types.cpp
-        include/http/types/types.hpp
         src/http/codes/http_status.cpp
-        include/http/codes/http_status.hpp
         src/http/codes/network_error.cpp
-        include/http/codes/network_error.hpp
-        src/http/base_client/base_client.cpp
-        include/http/base_client/base_client.hpp)
+        src/http/base_client/base_client.cpp)
 
 target_include_directories(CoreLibrary
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -88,26 +75,26 @@ target_link_libraries(CoreLibrary PUBLIC spdlog::spdlog)
 
 # --- Testing Configuration ---
 CPMAddPackage(
-    NAME googletest
-    GITHUB_REPOSITORY google/googletest
-    VERSION 1.15.2
-    OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt ON"
+        NAME googletest
+        GITHUB_REPOSITORY google/googletest
+        VERSION 1.15.2
+        OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt ON"
 )
 
 if (googletest_ADDED)
     enable_testing()
-    
-    add_executable(CoreTests 
-        tests/test_random.cpp
-        tests/test_logger.cpp
-        tests/test_winhttp.cpp
+
+    add_executable(CoreTests
+            tests/test_random.cpp
+            tests/test_logger.cpp
+            tests/test_winhttp.cpp
     )
-    
-    target_link_libraries(CoreTests PRIVATE CoreLibrary gtest_main)
-    
+
+    target_link_libraries(CoreTests PUBLIC CoreLibrary gtest_main)
+
     include(GoogleTest)
     gtest_discover_tests(CoreTests)
-endif()
+endif ()
 
 if (WIN32)
     message("Linking WinHTTP on Windows")
