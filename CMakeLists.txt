@@ -1,0 +1,92 @@
+cmake_minimum_required(VERSION 3.28)
+project(CoreLibrary)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_library(CoreLibrary STATIC
+        src/random/random.cpp
+        include/random/random.hpp
+        include/logger/constants/constants.hpp
+        src/logger/manager/manager.cpp
+        include/logger/manager/manager.hpp
+        include/win_http/constants/constants.hpp
+        src/win_http/utils/utils.cpp
+        include/win_http/utils/utils.hpp
+        src/win_http/types/types.cpp
+        include/win_http/types/types.hpp
+        src/win_http/handler/network.cpp
+        include/win_http/handler/network.hpp
+        include/win_http/include.hpp
+        include/http/constants/constants.hpp
+        src/http/types/types.cpp
+        include/http/types/types.hpp
+        src/http/codes/http_status.cpp
+        include/http/codes/http_status.hpp
+        src/http/codes/network_error.cpp
+        include/http/codes/network_error.hpp
+        src/http/base_client/base_client.cpp
+        include/http/base_client/base_client.hpp)
+
+target_include_directories(CoreLibrary
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(CPM_DOWNLOAD_VERSION 0.42.1)
+
+if (CPM_SOURCE_CACHE)
+    set(CPM_DOWNLOAD_LOCATION "${CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+elseif (DEFINED ENV{CPM_SOURCE_CACHE})
+    set(CPM_DOWNLOAD_LOCATION "$ENV{CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+else ()
+    set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+endif ()
+
+if (NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
+    message(STATUS "Downloading CPM.cmake to ${CPM_DOWNLOAD_LOCATION}")
+    file(DOWNLOAD "https://github.com/cpm-cmake/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake" ${CPM_DOWNLOAD_LOCATION}
+    )
+endif ()
+
+message("${CPMstatus}")
+
+include(${CPM_DOWNLOAD_LOCATION})
+
+CPMAddPackage(
+        NAME fmt
+        VERSION 12.1.0
+        URL "https://github.com/fmtlib/fmt/archive/refs/tags/12.1.0.tar.gz"
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        OPTIONS "FMT_TEST OFF" "BUILD_SHARED_LIBS OFF"
+)
+
+CPMAddPackage(
+        NAME spdlog
+        VERSION 1.17.0
+        URL "https://github.com/gabime/spdlog/archive/refs/tags/v1.17.0.tar.gz"
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        OPTIONS
+        "SPDLOG_FMT_EXTERNAL ON"   # Tells spdlog to find and use your 'fmt' package
+        "SPDLOG_BUILD_TESTS OFF"   # Disables internal spdlog tests
+        "SPDLOG_BUILD_EXAMPLE OFF" # Skips spdlog's example folder
+        "SPDLOG_BUILD_BENCH OFF"
+        "BUILD_SHARED_LIBS OFF"
+)
+
+CPMAddPackage(
+        NAME nlohmann_json
+        VERSION 3.12.0
+        URL "https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz"
+        URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        OPTIONS "JSON_BuildTests OFF"
+)
+
+target_link_libraries(CoreLibrary PUBLIC fmt::fmt)
+target_link_libraries(CoreLibrary PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(CoreLibrary PUBLIC spdlog::spdlog)
+
+if (WIN32)
+    message("Linking WinHTTP on Windows")
+    target_link_libraries(CoreLibrary PUBLIC winhttp.lib)
+endif ()
