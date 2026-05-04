@@ -1,4 +1,4 @@
-#include "http/types/types.hpp"
+#include "core/http/types/types.hpp"
 
 std::string core::getErrorMessage(const core::NetworkResponse& response) {
     if (const auto error = std::get_if<NetworkError>(&response)) {

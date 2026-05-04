@@ -1,10 +1,10 @@
-#ifndef CORELIBRARY_INCLUDE_WIN_HTTP_HANDLER_NETWORK_HPP
-#define CORELIBRARY_INCLUDE_WIN_HTTP_HANDLER_NETWORK_HPP
+#ifndef CORELIBRARY_INCLUDE_CORE_WIN_HTTP_HANDLER_NETWORK_HPP
+#define CORELIBRARY_INCLUDE_CORE_WIN_HTTP_HANDLER_NETWORK_HPP
 
 #include <chrono>
 #include <string>
 
-#include "win_http/types/types.hpp"
+#include "core/win_http/types/types.hpp"
 
 namespace core {
 
@@ -51,4 +51,4 @@ namespace core {
 
 } // namespace core
 
-#endif // CORELIBRARY_INCLUDE_WIN_HTTP_HANDLER_NETWORK_HPP
+#endif // CORELIBRARY_INCLUDE_CORE_WIN_HTTP_HANDLER_NETWORK_HPP

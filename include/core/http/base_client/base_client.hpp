@@ -1,5 +1,5 @@
-#ifndef CORELIBRARY_INCLUDE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
-#define CORELIBRARY_INCLUDE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
+#ifndef CORELIBRARY_INCLUDE_CORE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
+#define CORELIBRARY_INCLUDE_CORE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
 
 #include <chrono>
 #include <fmt/base.h>
@@ -8,11 +8,11 @@
 #include <thread>
 #include <type_traits>
 
-#include "http/constants/constants.hpp"
-#include "http/types/types.hpp"
-#include "logger/manager/manager.hpp"
-#include "random/random.hpp"
-#include "win_http/include.hpp"
+#include "core/http/constants/constants.hpp"
+#include "core/http/types/types.hpp"
+#include "core/logger/manager/manager.hpp"
+#include "core/random/random.hpp"
+#include "core/win_http/include.hpp"
 
 namespace core {
 
@@ -178,4 +178,4 @@ namespace core {
 } // namespace core
 
 
-#endif // CORELIBRARY_INCLUDE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP
+#endif // CORELIBRARY_INCLUDE_CORE_HTTP_BASE_CLIENT_BASE_CLIENT_HPP

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <logger/manager/manager.hpp>
+#include <core/logger/manager/manager.hpp>
 
 TEST(LoggerTest, Initialization) {
     // Verify Init doesn't crash

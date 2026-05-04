@@ -1,4 +1,4 @@
-#include "random/random.hpp"
+#include "core/random/random.hpp"
 
 core::UniformInt::UniformInt() : _gen(std::random_device{}()), _distribution(0, 9) {}
 

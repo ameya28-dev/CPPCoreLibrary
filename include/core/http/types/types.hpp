@@ -1,11 +1,11 @@
-#ifndef CORELIBRARY_INCLUDE_HTTP_TYPES_TYPES_HPP
-#define CORELIBRARY_INCLUDE_HTTP_TYPES_TYPES_HPP
+#ifndef CORELIBRARY_INCLUDE_CORE_HTTP_TYPES_TYPES_HPP
+#define CORELIBRARY_INCLUDE_CORE_HTTP_TYPES_TYPES_HPP
 
 #include <type_traits>
 #include <variant>
 
-#include "http/codes/http_status.hpp"
-#include "http/codes/network_error.hpp"
+#include "core/http/codes/http_status.hpp"
+#include "core/http/codes/network_status.hpp"
 #include <nlohmann/json.hpp>
 
 namespace core {
@@ -65,4 +65,4 @@ namespace core {
 
 } // namespace core
 
-#endif // CORELIBRARY_INCLUDE_HTTP_TYPES_TYPES_HPP
+#endif // CORELIBRARY_INCLUDE_CORE_HTTP_TYPES_TYPES_HPP

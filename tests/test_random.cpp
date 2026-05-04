@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <random/random.hpp>
+#include <core/random/random.hpp>
 
 TEST(UniformIntTest, SingleValueWithinRange) {
     core::UniformInt gen(1, 10);

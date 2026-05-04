@@ -1,11 +1,11 @@
-#include "win_http/utils/utils.hpp"
+#include "core/win_http/utils/utils.hpp"
 
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
-#include "logger/manager/manager.hpp"
+#include "core/logger/manager/manager.hpp"
 
 char core::toLower(const char c) {
     if (c >= 'A' && c <= 'Z') {

@@ -1,11 +1,11 @@
-#include "logger/manager/manager.hpp"
+#include "core/logger/manager/manager.hpp"
 
 #include <fmt/format.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-#include "logger/constants/constants.hpp"
+#include "core/logger/constants/constants.hpp"
 
 std::shared_ptr<spdlog::logger> core::LogManager::_globalLogger;
 std::shared_ptr<spdlog::logger> core::LogManager::_printLogger;

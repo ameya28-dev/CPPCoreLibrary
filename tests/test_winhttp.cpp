@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include <win_http/utils/utils.hpp>
-#include <win_http/handler/network.hpp>
+
+#include <core/win_http/handler/network.hpp>
+#include <core/win_http/utils/utils.hpp>
 
 using namespace core;
 
@@ -22,7 +23,7 @@ TEST(WinHttpUtilsTest, UrlEncode) {
 }
 
 TEST(WinHttpUtilsTest, GenerateURLEndpoint) {
-    Params params = {{"key1", "val1"}, {"key 2", "val 2"}};
+    Params params    = {{"key1", "val1"}, {"key 2", "val 2"}};
     std::wstring url = generateURLEndpoint(L"/path", params);
     // Note: multimap might have specific order, but usually it's key order.
     // "key 2" comes before "key1" in std::multimap? No, ' ' is before '1'.
@@ -37,8 +38,9 @@ TEST(NetworkHandlerTest, Initialization) {
 }
 
 #include <gtest/gtest.h>
-#include <http/base_client/base_client.hpp>
-#include <http/codes/network_error.hpp>
+
+#include <core/http/base_client/base_client.hpp>
+#include <core/http/codes/network_status.hpp>
 #include <nlohmann/json.hpp>
 
 using namespace core;
@@ -52,11 +54,11 @@ TEST(HttpCodesTest, IsTransient) {
     // Test transient network errors
     EXPECT_TRUE(isTransient(NetworkErrorStatus::Timeout, HttpStatus::Ok));
     EXPECT_TRUE(isTransient(NetworkErrorStatus::CannotConnect, HttpStatus::Ok));
-    
+
     // Test transient HTTP errors (5xx)
     EXPECT_TRUE(isTransient(NetworkErrorStatus::Success, HttpStatus::InternalServerError));
     EXPECT_TRUE(isTransient(NetworkErrorStatus::Success, HttpStatus::BadGateway));
-    
+
     // Test non-transient errors
     EXPECT_FALSE(isTransient(NetworkErrorStatus::InvalidUrl, HttpStatus::Ok));
     EXPECT_FALSE(isTransient(NetworkErrorStatus::Success, HttpStatus::BadRequest));
@@ -65,7 +67,7 @@ TEST(HttpCodesTest, IsTransient) {
 TEST(BaseClientTest, Construction) {
     // Construction should succeed even without network, as it just opens session/connect handles
     BaseClient client("TestAgent", "localhost", false);
-    // Note: If localhost isn't resolvable or something, it might fail, 
+    // Note: If localhost isn't resolvable or something, it might fail,
     // but usually WinHttpConnect doesn't validate much until Request.
 }
 

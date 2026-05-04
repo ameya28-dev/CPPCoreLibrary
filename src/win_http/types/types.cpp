@@ -1,6 +1,6 @@
-#include "win_http/types/types.hpp"
+#include "core/win_http/types/types.hpp"
 
-#include "win_http/utils/utils.hpp"
+#include "core/win_http/utils/utils.hpp"
 
 size_t core::CaseInsensitiveHash::operator()(const std::string_view key) const {
     return caseInsensitiveHash(key);

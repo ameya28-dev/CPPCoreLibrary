@@ -11,7 +11,7 @@ add_library(CoreLibrary STATIC
         src/win_http/handler/network.cpp
         src/http/types/types.cpp
         src/http/codes/http_status.cpp
-        src/http/codes/network_error.cpp
+        src/http/codes/network_status.cpp
         src/http/base_client/base_client.cpp)
 
 target_include_directories(CoreLibrary

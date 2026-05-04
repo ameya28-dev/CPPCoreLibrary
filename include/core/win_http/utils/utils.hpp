@@ -1,12 +1,12 @@
-#ifndef CORELIBRARY_INCLUDE_WIN_HTTP_UTILS_UTILS_HPP
-#define CORELIBRARY_INCLUDE_WIN_HTTP_UTILS_UTILS_HPP
+#ifndef CORELIBRARY_INCLUDE_CORE_WIN_HTTP_UTILS_UTILS_HPP
+#define CORELIBRARY_INCLUDE_CORE_WIN_HTTP_UTILS_UTILS_HPP
 
 #include <string>
 #include <string_view>
 
 #include <windows.h>
 
-#include "win_http/types/types.hpp"
+#include "core/win_http/types/types.hpp"
 
 namespace core {
 
@@ -28,4 +28,4 @@ namespace core {
 
 } // namespace core
 
-#endif // CORELIBRARY_INCLUDE_WIN_HTTP_UTILS_UTILS_HPP
+#endif // CORELIBRARY_INCLUDE_CORE_WIN_HTTP_UTILS_UTILS_HPP
