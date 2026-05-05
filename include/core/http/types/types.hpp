@@ -11,7 +11,7 @@
 namespace core {
     struct Empty {};
 
-    inline void from_json(const nlohmann::json&, Empty) {}
+    void from_json(const nlohmann::json&, Empty);
 
     struct NetworkError {
         std::string message;
@@ -39,24 +39,7 @@ namespace core {
 
     enum struct ApiError { SystemError, HTTP, InvalidJson, MappingError, MaxRetriesReached, Unknown };
 
-    constexpr const char* getDescription(ApiError error) {
-        switch (error) {
-        case ApiError::SystemError:
-            return "System Level Error";
-        case ApiError::HTTP:
-            return "Error served by the server";
-        case ApiError::InvalidJson:
-            return "Tried to parse Invalid JSON";
-        case ApiError::MappingError:
-            return "Invalid mapping of JSON Object";
-        case ApiError::MaxRetriesReached:
-            return "Retries exhausted";
-        case ApiError::Unknown:
-            return "Unknown";
-        default:
-            return "Unknown";
-        }
-    }
+     const char* getDescription(ApiError error) ;
 
     template <typename T = std::string>
     struct ApiFailure {
