@@ -1,4 +1,5 @@
 #include "core/http/base_client/base_client.hpp"
+
 #include <system_error>
 
 core::BaseClient::BaseClient(const std::string& agent, const std::string& host, const bool isHTTPS) {
@@ -35,13 +36,6 @@ auto core::BaseClient::SetTimeouts(const std::chrono::milliseconds connect, cons
 #if WIN32
     _handler.SetTimeouts(connect, send, receive, resolve);
 #endif
-}
-
-auto core::BaseClient::Delete(const std::string& path, const Params& params, const Headers& headers)
-    -> ApiResult<Empty> {
-    assert(_isOKConstruct && "Cannot request over network as connection failed");
-    return _executeWithRetry<Empty>(
-        [&](const std::string& p) { return _sendRequest(HTTPMethod::Delete, p, params, headers); }, path);
 }
 
 core::NetworkResponse core::BaseClient::_sendRequest(

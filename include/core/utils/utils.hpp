@@ -10,6 +10,43 @@
 #include <windows.h>
 #endif
 
+#ifdef __has_include
+#if __has_include(<nlohmann/json.hpp>)
+#include <type_traits>
+
+#include <nlohmann/json.hpp>
+
+namespace core {
+    template <typename T, typename = void>
+    struct IsJsonDeserializable : std::false_type {};
+
+    template <typename T>
+    struct IsJsonDeserializable<T, std::void_t<decltype(std::declval<nlohmann::json>().get<T>())>> : std::true_type {};
+
+    template <typename T, typename = void>
+    struct IsJsonSerializable : std::false_type {};
+
+    template <typename T>
+    struct IsJsonSerializable<T, std::void_t<decltype(nlohmann::json(std::declval<T>()))>> : std::true_type {};
+
+    template <typename T>
+    T tryParse(const std::string& str) {
+        if constexpr (std::is_same_v<T, std::string>) {
+            return str;
+        }
+
+        if (str.empty()) {
+            return T{};
+        }
+
+        nlohmann::json j = nlohmann::json::parse(str);
+        return j.get<T>();
+    }
+} // namespace core
+
+#endif
+#endif
+
 namespace core {
     struct CaseInsensitiveHash {
         size_t operator()(std::string_view) const;

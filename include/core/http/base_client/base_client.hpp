@@ -19,8 +19,8 @@
 #include "core/win_http/handler/network.hpp"
 #endif
 
-namespace core {
 
+namespace core {
     inline static UniformInt generator{constants::Jitter::Min, constants::Jitter::Max};
 
     class BaseClient {
@@ -36,24 +36,32 @@ namespace core {
         auto SetTimeouts(std::chrono::milliseconds connect, std::chrono::milliseconds send,
             std::chrono::milliseconds receive, std::chrono::milliseconds resolve) const -> void;
 
-        template <typename Resp>
+        template <typename Resp = std::string, typename Err = std::string>
         auto Get(const std::string& path, const Params& params = {}, const Headers& headers = {})
-            -> std::enable_if_t<IsJsonDeserializable<Resp>::value, ApiResult<Resp>>;
+            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value,
+                ApiResult<Resp, Err>>;
 
-        template <typename Resp, typename Req>
+        template <typename Req = std::string, typename Resp = std::string, typename Err = std::string>
         auto Post(const std::string& path, const Req& body, const Headers& headers = {})
-            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>>;
+            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value
+                                    && IsJsonSerializable<Req>::value,
+                ApiResult<Resp, Err>>;
 
-        template <typename Resp, typename Req>
+        template <typename Req = std::string, typename Resp = std::string, typename Err = std::string>
         auto Put(const std::string& path, const Req& body, const Headers& headers = {})
-            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>>;
+            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value
+                                    && IsJsonSerializable<Req>::value,
+                ApiResult<Resp, Err>>;
 
-        template <typename Resp, typename Req>
+        template <typename Req = std::string, typename Resp = std::string, typename Err = std::string>
         auto Patch(const std::string& path, const Req& body, const Headers& headers = {})
-            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>>;
+            -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value
+                                    && IsJsonSerializable<Req>::value,
+                ApiResult<Resp, Err>>;
 
+        template <typename Err = std::string>
         auto Delete(const std::string& path, const Params& params = {}, const Headers& headers = {})
-            -> ApiResult<Empty>;
+            -> ApiResult<Empty, Err>;
 
     private:
         NetworkResponse _sendRequest(
@@ -63,11 +71,11 @@ namespace core {
         auto _sendRequest(HTTPMethod method, const std::string& path, const Headers& headers, const Req& payload)
             -> std::enable_if_t<IsJsonSerializable<Req>::value, NetworkResponse>;
 
-        template <typename T, typename Func>
-        auto _executeWithRetry(Func&&, const std::string&) -> ApiResult<T>;
+        template <typename T = std::string, typename Err = std::string, typename Func>
+        auto _executeWithRetry(Func&&, const std::string&) -> std::variant<Success<T>, Failure<Err>>;
 
-        template <typename T>
-        auto _parseToVariant(NetworkResponse&& response) -> ApiResult<T>;
+        template <typename T = std::string, typename Err = std::string>
+        auto _parseToVariant(NetworkResponse&& response) -> ApiResult<T, Err>;
 
     private:
 #if WIN32
@@ -78,36 +86,51 @@ namespace core {
         bool _isOKConstruct = false;
     };
 
-    template <typename Resp>
+    template <typename Resp, typename Err>
     auto BaseClient::Get(const std::string& path, const Params& params, const Headers& headers)
-        -> std::enable_if_t<IsJsonDeserializable<Resp>::value, ApiResult<Resp>> {
+        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value,
+            ApiResult<Resp, Err>> {
         assert(_isOKConstruct && "Cannot request over network as connection failed");
-        return _executeWithRetry<Resp>(
+        return _executeWithRetry<Resp, Err>(
             [&](const std::string& p) { return _sendRequest(HTTPMethod::Get, p, params, headers); }, path);
     }
 
-    template <typename Resp, typename Req>
+    template <typename Req, typename Resp, typename Err>
     auto BaseClient::Post(const std::string& path, const Req& body, const Headers& headers)
-        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>> {
+        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value
+                                && IsJsonSerializable<Req>::value,
+            ApiResult<Resp, Err>> {
         assert(_isOKConstruct && "Cannot request over network as connection failed");
-        return _executeWithRetry<Resp>(
+        return _executeWithRetry<Resp, Err>(
             [&](const std::string& p) { return _sendRequest<Req>(HTTPMethod::Post, p, headers, body); }, path);
     }
 
-    template <typename Resp, typename Req>
+    template <typename Req, typename Resp, typename Err>
     auto BaseClient::Put(const std::string& path, const Req& body, const Headers& headers)
-        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>> {
+        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value
+                                && IsJsonSerializable<Req>::value,
+            ApiResult<Resp, Err>> {
         assert(_isOKConstruct && "Cannot request over network as connection failed");
-        return _executeWithRetry<Resp>(
+        return _executeWithRetry<Resp, Err>(
             [&](const std::string& p) { return _sendRequest<Req>(HTTPMethod::Put, p, headers, body); }, path);
     }
 
-    template <typename Resp, typename Req>
+    template <typename Req, typename Resp, typename Err>
     auto BaseClient::Patch(const std::string& path, const Req& body, const Headers& headers)
-        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonSerializable<Req>::value, ApiResult<Resp>> {
+        -> std::enable_if_t<IsJsonDeserializable<Resp>::value && IsJsonDeserializable<Err>::value
+                                && IsJsonSerializable<Req>::value,
+            ApiResult<Resp, Err>> {
         assert(_isOKConstruct && "Cannot request over network as connection failed");
-        return _executeWithRetry<Resp>(
+        return _executeWithRetry<Resp, Err>(
             [&](const std::string& p) { return _sendRequest<Req>(HTTPMethod::Patch, p, headers, body); }, path);
+    }
+
+    template <typename Err>
+    auto BaseClient::Delete(const std::string& path, const Params& params, const Headers& headers)
+        -> ApiResult<Empty, Err> {
+        assert(_isOKConstruct && "Cannot request over network as connection failed");
+        return _executeWithRetry<Empty, Err>(
+            [&](const std::string& p) { return _sendRequest(HTTPMethod::Delete, p, params, headers); }, path);
     }
 
     template <typename Req>
@@ -133,8 +156,8 @@ namespace core {
 #endif
     }
 
-    template <typename T, typename Func>
-    ApiResult<T> BaseClient::_executeWithRetry(Func&& func, const std::string& path) {
+    template <typename T, typename Err, typename Func>
+    auto BaseClient::_executeWithRetry(Func&& func, const std::string& path) -> ApiResult<T, Err> {
         NetworkResponse res{};
         int attempts = 0;
 
@@ -143,12 +166,12 @@ namespace core {
             /// retry only if HttpStatus and ErrorCode are transient
             if (const auto error = std::get_if<NetworkError>(&res)) {
                 if (!isTransient(error->code)) {
-                    return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
+                    return _parseToVariant<T, Err>(std::move(res));
                 }
             }
 
             if (const auto [body, status] = std::get<NetworkResult>(res); !isTransient(status)) {
-                return _parseToVariant<T>(std::move(res));
+                return _parseToVariant<T, Err>(std::move(res));
             }
 
             if (attempts >= _retryCount) {
@@ -165,28 +188,24 @@ namespace core {
         }
     }
 
-    template <typename T>
-    auto BaseClient::_parseToVariant(NetworkResponse&& response) -> ApiResult<T> {
+    template <typename T, typename Err>
+    auto BaseClient::_parseToVariant(NetworkResponse&& response) -> ApiResult<T, Err> {
         if (const auto error = std::get_if<NetworkError>(&response)) {
             return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
         }
 
         const auto [body, status] = std::get<NetworkResult>(response);
-        if (status > HttpStatus::ImUsed || status < HttpStatus::Ok) {
-            return Failure<>{body, getDescription(status), ApiError::HTTP, static_cast<int>(status)};
-        }
-
         try {
+            if (status > HttpStatus::ImUsed || status < HttpStatus::Ok) {
+                return Failure<>{
+                    core::tryParse<Err>(body), getDescription(status), ApiError::HTTP, static_cast<int>(status)};
+            }
+
             if constexpr (std::is_same_v<T, Empty>) {
                 return Success<Empty>{Empty{}, static_cast<int>(status)};
             }
 
-            if constexpr (std::is_same_v<T, std::string>) {
-                return Success<T>{body, static_cast<int>(status)};
-            }
-
-            nlohmann::json j = body.empty() ? nlohmann::json::object() : nlohmann::json::parse(body);
-            return Success<T>{j.get<T>(), static_cast<int>(status)};
+            return Success<T>{core::tryParse<T>(body), static_cast<int>(status)};
         } catch (const nlohmann::json::parse_error& ex) {
             return Failure<>{body, ex.what(), ApiError::InvalidJson, static_cast<int>(status)};
         } catch (const std::exception& ex) {

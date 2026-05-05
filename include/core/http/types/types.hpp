@@ -9,18 +9,6 @@
 #include <nlohmann/json.hpp>
 
 namespace core {
-    template <typename T, typename = void>
-    struct IsJsonDeserializable : std::false_type {};
-
-    template <typename T>
-    struct IsJsonDeserializable<T, std::void_t<decltype(std::declval<nlohmann::json>().get<T>())>> : std::true_type {};
-
-    template <typename T, typename = void>
-    struct IsJsonSerializable : std::false_type {};
-
-    template <typename T>
-    struct IsJsonSerializable<T, std::void_t<decltype(nlohmann::json(std::declval<T>()))>> : std::true_type {};
-
     struct Empty {};
 
     inline void from_json(const nlohmann::json&, Empty) {}
