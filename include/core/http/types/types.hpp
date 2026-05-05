@@ -29,7 +29,7 @@ namespace core {
 
     std::string getRawBody(const NetworkResponse& response);
 
-    int getRawStatusCode(const NetworkResponse& response);
+    int getStatusCode(const NetworkResponse& response);
 
     template <typename T = std::string>
     struct Success {
@@ -39,17 +39,40 @@ namespace core {
 
     enum struct ApiError { SystemError, HTTP, InvalidJson, MappingError, MaxRetriesReached, Unknown };
 
+    constexpr const char* getDescription(ApiError error) {
+        switch (error) {
+        case ApiError::SystemError:
+            return "System Level Error";
+        case ApiError::HTTP:
+            return "Error served by the server";
+        case ApiError::InvalidJson:
+            return "Tried to parse Invalid JSON";
+        case ApiError::MappingError:
+            return "Invalid mapping of JSON Object";
+        case ApiError::MaxRetriesReached:
+            return "Retries exhausted";
+        case ApiError::Unknown:
+            return "Unknown";
+        default:
+            return "Unknown";
+        }
+    }
+
     template <typename T = std::string>
-    struct Failure {
-        T rawBody;
+    struct ApiFailure {
+        T body;
+        std::string message;
+        int status;
+    };
+
+    struct OtherFailure {
         std::string message;
         ApiError error;
-        int rawStatus;
+        int code;
     };
 
     template <typename T, typename E = std::string>
-    using ApiResult = std::variant<Success<T>, Failure<E>>;
-
+    using ApiResult = std::variant<Success<T>, ApiFailure<E>, OtherFailure>;
 
 } // namespace core
 

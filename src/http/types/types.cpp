@@ -24,7 +24,7 @@ std::string core::getRawBody(const NetworkResponse& response) {
     return "";
 }
 
-int core::getRawStatusCode(const NetworkResponse& response) {
+int core::getStatusCode(const NetworkResponse& response) {
     if (const auto error = std::get_if<NetworkError>(&response)) {
         return getNumericCodeOfError(error->code);
     }

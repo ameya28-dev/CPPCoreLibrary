@@ -72,7 +72,7 @@ namespace core {
             -> std::enable_if_t<IsJsonSerializable<Req>::value, NetworkResponse>;
 
         template <typename T = std::string, typename Err = std::string, typename Func>
-        auto _executeWithRetry(Func&&, const std::string&) -> std::variant<Success<T>, Failure<Err>>;
+        auto _executeWithRetry(Func&&, const std::string&) -> ApiResult<T, Err>;
 
         template <typename T = std::string, typename Err = std::string>
         auto _parseToVariant(NetworkResponse&& response) -> ApiResult<T, Err>;
@@ -175,9 +175,11 @@ namespace core {
             }
 
             if (attempts >= _retryCount) {
-                return Failure<>{getRawBody(res),
+                return OtherFailure{
                     fmt::format("Retry limit ({}) reached. Final cause: {}", _retryCount, getErrorMessage(res)),
-                    ApiError::MaxRetriesReached, getRawStatusCode(res)};
+                    ApiError::MaxRetriesReached,
+                    getStatusCode(res),
+                };
             }
             attempts++;
             auto waitDuration = std::chrono::seconds(1 << (attempts - 1)) + std::chrono::microseconds(generator.next());
@@ -191,14 +193,21 @@ namespace core {
     template <typename T, typename Err>
     auto BaseClient::_parseToVariant(NetworkResponse&& response) -> ApiResult<T, Err> {
         if (const auto error = std::get_if<NetworkError>(&response)) {
-            return Failure<>{"", error->message, ApiError::SystemError, getNumericCodeOfError(error->code)};
+            return OtherFailure{
+                error->message,
+                ApiError::SystemError,
+                getNumericCodeOfError(error->code),
+            };
         }
 
         const auto [body, status] = std::get<NetworkResult>(response);
         try {
             if (status > HttpStatus::ImUsed || status < HttpStatus::Ok) {
-                return Failure<>{
-                    core::tryParse<Err>(body), getDescription(status), ApiError::HTTP, static_cast<int>(status)};
+                return ApiFailure<Err>{
+                    core::tryParse<Err>(body),
+                    getDescription(status),
+                    static_cast<int>(status),
+                };
             }
 
             if constexpr (std::is_same_v<T, Empty>) {
@@ -207,9 +216,17 @@ namespace core {
 
             return Success<T>{core::tryParse<T>(body), static_cast<int>(status)};
         } catch (const nlohmann::json::parse_error& ex) {
-            return Failure<>{body, ex.what(), ApiError::InvalidJson, static_cast<int>(status)};
+            return OtherFailure{
+                fmt::format("Error Description: {}, API Response: {}", ex.what(), body),
+                ApiError::InvalidJson,
+                static_cast<int>(status),
+            };
         } catch (const std::exception& ex) {
-            return Failure<>{body, ex.what(), ApiError::MappingError, static_cast<int>(status)};
+            return OtherFailure{
+                fmt::format("Error Description: {}, API Response: {}", ex.what(), body),
+                ApiError::MappingError,
+                static_cast<int>(status),
+            };
         }
     }
 
