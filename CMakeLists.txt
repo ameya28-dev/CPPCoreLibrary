@@ -15,16 +15,33 @@ set(CoreLibrary_SOURCES
 
 if (WIN32)
     list(APPEND CoreLibrary_SOURCES
-        src/win_http/types/types.cpp
-        src/win_http/handler/network.cpp
+            src/win_http/types/types.cpp
+            src/win_http/handler/network.cpp
     )
-endif()
+endif ()
 
 add_library(CoreLibrary STATIC ${CoreLibrary_SOURCES})
 
 target_include_directories(CoreLibrary
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_compile_definitions(CoreLibrary PRIVATE $<$<CONFIG:Debug>:PROJECT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}">)
+set(TZDATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tzdata")
+message(STATUS "absolute path of tzdata folder: ${TZDATA_DIR}")
+if (EXISTS "${TZDATA_DIR}")
+    file(GLOB_RECURSE RESOURCES_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tzdata/*")
+    add_custom_command(
+            OUTPUT "${CMAKE_BINARY_DIR}/tzdata_copy_stamp"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/tzdata" "$<TARGET_FILE_DIR:CoreLibrary>/tzdata"
+            COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_BINARY_DIR}/tzdata_copy_stamp"
+            DEPENDS ${RESOURCES_FILES}
+            COMMENT "Copying tzdata to output directory"
+    )
+    add_custom_target(copy_resource_files DEPENDS "${CMAKE_BINARY_DIR}/tzdata_copy_stamp")
+    add_dependencies(CoreLibrary copy_resource_files)
+endif ()
+
 
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(CPM_DOWNLOAD_VERSION 0.42.1)
