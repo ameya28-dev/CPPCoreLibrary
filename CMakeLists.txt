@@ -11,6 +11,8 @@ set(CoreLibrary_SOURCES
         src/http/codes/http_status.cpp
         src/http/codes/network_status.cpp
         src/http/base_client/base_client.cpp
+        include/core/date/date.cpp
+        include/core/initializer.hpp
 )
 
 if (WIN32)
@@ -22,26 +24,25 @@ endif ()
 
 add_library(CoreLibrary STATIC ${CoreLibrary_SOURCES})
 
+if (WIN32)
+    target_compile_definitions(CoreLibrary PUBLIC NOMINMAX)
+endif ()
+
 target_include_directories(CoreLibrary
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_compile_definitions(CoreLibrary PRIVATE $<$<CONFIG:Debug>:PROJECT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}">)
-set(TZDATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tzdata")
-message(STATUS "absolute path of tzdata folder: ${TZDATA_DIR}")
-if (EXISTS "${TZDATA_DIR}")
-    file(GLOB_RECURSE RESOURCES_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tzdata/*")
-    add_custom_command(
-            OUTPUT "${CMAKE_BINARY_DIR}/tzdata_copy_stamp"
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/tzdata" "$<TARGET_FILE_DIR:CoreLibrary>/tzdata"
-            COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_BINARY_DIR}/tzdata_copy_stamp"
-            DEPENDS ${RESOURCES_FILES}
-            COMMENT "Copying tzdata to output directory"
-    )
-    add_custom_target(copy_resource_files DEPENDS "${CMAKE_BINARY_DIR}/tzdata_copy_stamp")
-    add_dependencies(CoreLibrary copy_resource_files)
-endif ()
+set(CORE_TZDATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tzdata" CACHE INTERNAL "")
 
+function(core_deploy_tzdata TARGET_NAME)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CORE_TZDATA_PATH}"
+            "$<TARGET_FILE_DIR:${TARGET_NAME}>/tzdata"
+            COMMENT "Copying TimeZone database to output directory..."
+            VERBATIM
+    )
+endfunction()
 
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(CPM_DOWNLOAD_VERSION 0.42.1)
