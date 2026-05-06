@@ -35,13 +35,16 @@ target_include_directories(CoreLibrary
 set(CORE_TZDATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tzdata" CACHE INTERNAL "")
 
 function(CoreDeployTZData TARGET_NAME)
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CORE_TZDATA_PATH}"
-            "$<TARGET_FILE_DIR:${TARGET_NAME}>/tzdata"
-            COMMENT "Copying TimeZone database to output directory..."
-            VERBATIM
-    )
+    if (WIN32)
+        message(STATUS "Copying Time Zone DB to be used with <date/tz.h>")
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CORE_TZDATA_PATH}"
+                "$<TARGET_FILE_DIR:${TARGET_NAME}>/tzdata"
+                COMMENT "Copying TimeZone database to output directory..."
+                VERBATIM
+        )
+    endif ()
 endfunction()
 
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
