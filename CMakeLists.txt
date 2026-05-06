@@ -86,6 +86,17 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+        NAME date
+        VERSION 3.0.4
+        URL "https://github.com/HowardHinnant/date/archive/refs/tags/v3.0.4.tar.gz"
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        OPTIONS
+        "ENABLE_DATE_TESTING OFF"
+        "USE_SYSTEM_TZ_DB ON"
+        "BUILD_TZ_LIB ON"
+)
+
+CPMAddPackage(
         NAME nlohmann_json
         VERSION 3.12.0
         URL "https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz"
@@ -97,6 +108,7 @@ CPMAddPackage(
 target_link_libraries(CoreLibrary PUBLIC fmt::fmt)
 target_link_libraries(CoreLibrary PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(CoreLibrary PUBLIC spdlog::spdlog)
+target_link_libraries(CoreLibrary PUBLIC date::date date::date-tz)
 
 # --- Testing Configuration ---
 CPMAddPackage(
