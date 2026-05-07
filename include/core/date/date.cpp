@@ -6,6 +6,8 @@
 #include <windows.h>
 #endif
 
+#include "core/logger/manager/manager.hpp"
+
 void core::setTimeZoneDB() {
 #if WIN32
     char buffer[MAX_PATH];

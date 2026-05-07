@@ -1,10 +1,9 @@
-#ifndef WINHTTPPROJECT_CPPCORELIBRARY_INCLUDE_CORE_DATE_DATE_HPP
-#define WINHTTPPROJECT_CPPCORELIBRARY_INCLUDE_CORE_DATE_DATE_HPP
+#ifndef CORELIBRARY_INCLUDE_CORE_DATE_DATE_HPP
+#define CORELIBRARY_INCLUDE_CORE_DATE_DATE_HPP
 
 #include <date/date.h>
 #include <date/tz.h>
-
-#include "core/logger/manager/manager.hpp"
+#include <fmt/base.h>
 
 template <>
 struct fmt::formatter<date::zoned_seconds> {
@@ -23,6 +22,7 @@ namespace core {
             static constexpr auto DateTime = "%d-%m-%Y %H:%M:%S";
             static constexpr auto Date     = "%d-%m-%Y";
             static constexpr auto Time     = "%H:%M:%S";
+            static constexpr auto Time12Hr = "%I:%M:%S %p";
         };
     } // namespace constants
 
@@ -35,4 +35,4 @@ namespace core {
 } // namespace core
 
 
-#endif // WINHTTPPROJECT_CPPCORELIBRARY_INCLUDE_CORE_DATE_DATE_HPP
+#endif // CORELIBRARY_INCLUDE_CORE_DATE_DATE_HPP
