@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <variant>
 
 #if WIN32
 #include <windows.h>
@@ -15,6 +16,14 @@
 #include <type_traits>
 
 #include <nlohmann/json.hpp>
+
+template <class... Ts>
+struct Overloaded : Ts... {
+    using Ts::operator()...;
+};
+
+template <class... Ts>
+Overloaded(Ts...) -> Overloaded<Ts...>;
 
 namespace core {
     template <typename T, typename = void>
@@ -76,6 +85,15 @@ namespace core {
     std::wstring generateURLEndpoint(const std::wstring&, const std::multimap<std::string, std::string>&);
 #endif
 
+    template <typename... Ts>
+    auto makeVisitor(Ts&&... ts) {
+        return Overloaded<std::decay_t<Ts>...>{std::forward<Ts>(ts)...};
+    }
+
+    template <typename Variant, typename... Handlers>
+    auto match(Variant&& v, Handlers&&... handlers) {
+        return std::visit(makeVisitor(std::forward<Handlers>(handlers)...), std::forward<Variant>(v));
+    }
 } // namespace core
 
 #endif // CORELIBRARY_INCLUDE_CORE_WIN_HTTP_UTILS_UTILS_HPP

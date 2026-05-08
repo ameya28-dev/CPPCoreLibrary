@@ -7,14 +7,6 @@
 #include "core/http/codes/network_status.hpp"
 #include <nlohmann/json.hpp>
 
-template <class... Ts>
-struct Overloaded : Ts... {
-    using Ts::operator()...;
-};
-
-template <class... Ts>
-Overloaded(Ts...) -> Overloaded<Ts...>;
-
 namespace core {
     struct Empty {};
 
